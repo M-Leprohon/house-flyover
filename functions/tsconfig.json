@@ -1,0 +1,27 @@
+// functions/tsconfig.json
+{
+  "compilerOptions": {
+    "module": "Node16", // Or "ESNext", or "NodeNext" for modern Node.js
+    "target": "ES2022", // Or "ES2020", "ESNext" for recent Node.js versions
+    "lib": [
+      "ES2022" // Add other libraries if your code uses them (e.g., "DOM" for web APIs)
+    ],
+    "outDir": "lib", // This is correct: compiled JS files go here
+    "rootDir": "src", // This is correct: your TS source files are here
+    "strict": true,
+    "esModuleInterop": true, // Important for better compatibility with CommonJS imports
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node16", // Crucial for how TypeScript resolves module paths
+    // --- REMOVE THESE LINES ---
+    // "noEmit": true,
+    // "allowImportingTsExtensions": true,
+    // --- End REMOVE ---
+  },
+  "include": [
+    "src" // Ensure your source directory is included
+  ],
+  "exclude": [
+    "node_modules" // Exclude node_modules from compilation
+  ]
+}
