@@ -1,8 +1,5 @@
 {
   "emulators": {
-    "dataconnect": {
-      "dataDir": "dataconnect/.dataconnect/pgliteData"
-    },
     "functions": {
       "port": 5001
     },
@@ -10,15 +7,12 @@
       "port": 8080
     },
     "hosting": {
-      "port": 5000
+      "port": 5002
     },
     "ui": {
       "enabled": true
     },
     "singleProjectMode": true
-  },
-  "dataconnect": {
-    "source": "dataconnect"
   },
   "functions": [
     {
