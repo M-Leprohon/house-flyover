@@ -1,6 +1,9 @@
-import { getFirestore } from 'firebase-admin/firestore';
+import {
+  getFirestore,
+  CollectionReference,
+  DocumentData,
+} from 'firebase-admin/firestore';
 import { initializeApp, getApps } from 'firebase-admin/app';
-import { CollectionReference, DocumentData } from 'firebase-admin/firestore';
 
 if (!getApps().length) {
   // Prevent re-initialization in hot-reloaded environments
@@ -15,6 +18,15 @@ interface Flyovers {
   seen_at?: number; // Or Date, depending on how you store it
   last_flyover_ended_at?: number; // Or Date, depending on how you store it
   flyover_started_at?: number; // Or Date, depending on how you store it
+  aircraft?: string;
+}
+
+interface Record {
+  hex: string;
+  aircraft: {
+    type: string;
+    manufacturer: string;
+  };
 }
 
 const getMyDataCollection = (): CollectionReference<Flyovers> => {
@@ -23,13 +35,15 @@ const getMyDataCollection = (): CollectionReference<Flyovers> => {
 
 /**
  * Records a flyover event in the Firestore 'flyovers' collection.
- * @param {Flyovers} item - The flyover data to record.
+ * @param {Record} record - The flyover data to record.
  * @return {Promise<string>} The ID of the newly created document.
  */
-export async function recordFlyover(item: Flyovers): Promise<string> {
+export async function recordFlyover(record: Record): Promise<string> {
   // The 'hex' field from your item is the unique value we're checking
-  const hexValue = item.hex;
+  const hexValue = record.hex;
   const FLYOVER_TIMEOUT = 5 * 60 * 1000;
+  const item = {} as Flyovers;
+  item.hex = hexValue;
 
   // Basic validation to ensure the hex field is present
   if (!hexValue) {
@@ -61,6 +75,10 @@ export async function recordFlyover(item: Flyovers): Promise<string> {
           item.flyover_started_at = Date.now();
           item.seen_at = Date.now();
           item.last_flyover_ended_at = seenAt;
+          // prettier-ignore
+          item.aircraft = record.aircraft?.manufacturer ?
+            `${record.aircraft.manufacturer} ${record.aircraft.type}` :
+            'unknown aircraft';
           transaction.update(targetDocRef, item as DocumentData);
         } else {
           console.log(
@@ -87,6 +105,10 @@ export async function recordFlyover(item: Flyovers): Promise<string> {
         item.seen_at = Date.now();
         item.flyover_started_at = Date.now();
         item.last_flyover_ended_at = 0;
+        // prettier-ignore
+        item.aircraft = record.aircraft?.manufacturer ?
+          `${record.aircraft?.manufacturer} ${record.aircraft?.type}` :
+          'unknown aircraft';
         // Set the entire item (which includes 'hex') as the document content
         transaction.set(targetDocRef, item);
       }

@@ -120,7 +120,7 @@ app.get('/api/flights', async (req: Request, res: Response) => {
       error.message
     );
   }
-  await recordFlyover({ hex: hex });
+  await recordFlyover({ hex: hex, aircraft: plane });
   res.json({
     callsign,
     plane,
